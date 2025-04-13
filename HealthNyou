@@ -1,0 +1,235 @@
+import { useState } from "react";
+import { Card, CardContent } from "@mui/material";
+import { Button } from "@mui/material";
+import { Switch } from "@mui/material";
+import { Label } from "@mui/material";
+import { Settings, User } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+
+const tabs = ["Dashboard", "Leaderboard", "Scanner", "Planner", "Reviews"];
+
+const sleepData = [
+  { time: "10PM", quality: 60 },
+  { time: "12AM", quality: 75 },
+  { time: "2AM", quality: 40 },
+  { time: "4AM", quality: 80 },
+  { time: "6AM", quality: 90 },
+];
+
+const stepProgress = [
+  { label: "Completed", value: 7580 },
+  { label: "Remaining", value: 1420 },
+];
+
+const supplementEffectiveness = [
+  { supplement: "Omega-3", effectiveness: 80, bestTime: "Morning" },
+  { supplement: "Vitamin D", effectiveness: 95, bestTime: "Afternoon" },
+];
+
+export default function HealthNYouApp() {
+  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [showSettings, setShowSettings] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [locationAllowed, setLocationAllowed] = useState(false);
+  const [dataAllowed, setDataAllowed] = useState(false);
+  const [appearance, setAppearance] = useState("Light");
+  const [isPublic, setIsPublic] = useState(true);
+  const [profileName, setProfileName] = useState("sprinkles223");
+  const [profileImage, setProfileImage] = useState(null);
+  const [friendSearch, setFriendSearch] = useState("");
+
+  const renderSettings = () => (
+    <Card className="w-full">
+      <CardContent className="p-4 grid gap-4">
+        <div className="text-xl font-bold">Settings</div>
+        <div className="flex items-center justify-between">
+          <Label>Allow Location Permissions</Label>
+          <Switch checked={locationAllowed} onCheckedChange={setLocationAllowed} />
+        </div>
+        <div className="flex items-center justify-between">
+          <Label>Allow Data Gathering</Label>
+          <Switch checked={dataAllowed} onCheckedChange={setDataAllowed} />
+        </div>
+        <div>
+          <Label className="block mb-1">Appearance</Label>
+          <select
+            value={appearance}
+            onChange={(e) => setAppearance(e.target.value)}
+            className="border p-2 rounded w-full"
+          >
+            <option>Light</option>
+            <option>Dark</option>
+            <option>System</option>
+          </select>
+        </div>
+        <div className="flex items-center justify-between">
+          <Label>Profile Visibility</Label>
+          <Switch checked={isPublic} onCheckedChange={setIsPublic} />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderProfile = () => (
+    <Card className="w-full">
+      <CardContent className="p-4 grid gap-4">
+        <div className="text-xl font-bold mb-2">My Profile</div>
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center">
+            {profileImage ? (
+              <img src={profileImage} alt="Profile" className="w-full h-full rounded-full object-cover" />
+            ) : (
+              <User className="w-6 h-6 text-gray-600" />
+            )}
+          </div>
+          <Button variant="outline" size="sm">Change Image</Button>
+        </div>
+        <div className="mt-2">
+          <Label className="block">Profile Name</Label>
+          <div className="text-lg font-semibold">{profileName}</div>
+        </div>
+        <div className="mt-4">
+          <Label className="block mb-1">Add Friends</Label>
+          <input
+            type="text"
+            placeholder="Search usernames..."
+            value={friendSearch}
+            onChange={(e) => setFriendSearch(e.target.value)}
+            className="w-full border p-2 rounded"
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderContent = () => {
+    if (activeTab === "Dashboard" && showSettings) return renderSettings();
+    if (activeTab === "Leaderboard" && showProfile) return renderProfile();
+
+    switch (activeTab) {
+      case "Dashboard":
+        return (
+          <Card className="w-full relative">
+            <CardContent className="p-4 grid gap-6">
+              <div className="flex justify-between items-center">
+                <div className="text-xl font-bold">Dashboard</div>
+                <Button variant="ghost" size="icon" onClick={() => setShowSettings(true)}>
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </div>
+              <div>
+                <div>Steps: 7,580 / 10,000</div>
+                <ResponsiveContainer width="100%" height={120}>
+                  <BarChart data={stepProgress}>
+                    <XAxis dataKey="label" hide />
+                    <Bar dataKey="value" fill="#4f46e5" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div>
+                <div className="font-medium">Sleep Quality</div>
+                <ResponsiveContainer width="100%" height={150}>
+                  <LineChart data={sleepData}>
+                    <XAxis dataKey="time" />
+                    <YAxis domain={[0, 100]} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="quality" stroke="#10b981" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div>Mood: 😊</div>
+            </CardContent>
+          </Card>
+        );
+      case "Leaderboard":
+        return (
+          <Card className="w-full relative">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center mb-4">
+                <div className="text-xl font-bold">Leaderboard</div>
+                <Button variant="ghost" size="icon" onClick={() => setShowProfile(true)}>
+                  <User className="w-5 h-5" />
+                </Button>
+              </div>
+              <ul className="space-y-2">
+                <li>🏆 Alex - 9,450 pts</li>
+                <li>🎯 Sam - 8,230 pts</li>
+                <li>🔥 Jordan - 7,990 pts</li>
+              </ul>
+            </CardContent>
+          </Card>
+        );
+      case "Scanner":
+        return (
+          <Card className="w-full">
+            <CardContent className="p-4">
+              <div className="text-xl font-bold">Food Label Scanner</div>
+              <p className="mt-2">Scan Result: Granola Bar</p>
+              <ul className="mt-2 list-disc list-inside">
+                <li>Calories: 210</li>
+                <li>Sugar: 12g</li>
+                <li>Fiber: 4g</li>
+              </ul>
+            </CardContent>
+          </Card>
+        );
+      case "Planner":
+        return (
+          <Card className="w-full">
+            <CardContent className="p-4 grid gap-2">
+              <div className="text-xl font-bold">Workout Planner</div>
+              <div>Push-ups: 3 sets of 15</div>
+              <div>Cardio: 20 min run</div>
+              <div>Bicep Curls: 3 sets of 10</div>
+            </CardContent>
+          </Card>
+        );
+      case "Reviews":
+        return (
+          <Card className="w-full">
+            <CardContent className="p-4">
+              <div className="text-xl font-bold mb-4">Supplement Reviews</div>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={supplementEffectiveness} layout="vertical">
+                  <XAxis type="number" domain={[0, 100]} />
+                  <YAxis dataKey="supplement" type="category" />
+                  <Tooltip />
+                  <Bar dataKey="effectiveness" fill="#6366f1" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4">
+                {supplementEffectiveness.map((s) => (
+                  <div key={s.supplement} className="mb-2">
+                    <strong>{s.supplement}</strong>: Best taken in the {s.bestTime}.
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-2xl mx-auto">
+      <div className="flex justify-around mb-4">
+        {tabs.map((tab) => (
+          <Button
+            key={tab}
+            variant={activeTab === tab ? "default" : "outline"}
+            onClick={() => {
+              setActiveTab(tab);
+              setShowSettings(false);
+              setShowProfile(false);
+            }}
+          >
+            {tab}
+          </Button>
+        ))}
+      </div>
+      {renderContent()}
+    </div>
+  );
+}
